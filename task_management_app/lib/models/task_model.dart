@@ -16,7 +16,7 @@ class Task {
     this.isRepeated = false,
   });
 
-  // Convert Task object to Map for SQLite storage
+  // Convert Task object to Map for SQLite storag
   Map<String, dynamic> toMap() {
     return {
       'id': id,
