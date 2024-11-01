@@ -39,4 +39,6 @@ class Task {
       isRepeated: map['isRepeated'] == 1,
     );
   }
+
+  Task copyWith({required bool isCompleted}) {}
 }

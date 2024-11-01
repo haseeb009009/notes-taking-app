@@ -7,23 +7,38 @@ import '../models/task_model.dart';
 
 class TaskListWidget extends StatelessWidget {
   final String filter;
+  final String searchQuery;
+  final String sortOption;
 
-  const TaskListWidget({Key? key, required this.filter}) : super(key: key);
+  const TaskListWidget({
+    Key? key,
+    required this.filter,
+    this.searchQuery = "",
+    this.sortOption = "none",
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
-    final List<Task> filteredTasks;
+    List<Task> filteredTasks = taskProvider.tasks.where((task) {
+      bool matchesFilter = filter == 'today'
+          ? task.dueDate.day == DateTime.now().day && !task.isCompleted
+          : filter == 'completed'
+              ? task.isCompleted
+              : task.isRepeated;
 
-    // Filter tasks based on the filter value
-    if (filter == 'today') {
-      filteredTasks = taskProvider.tasks.where((task) =>
-          task.dueDate.day == DateTime.now().day &&
-          !task.isCompleted).toList();
-    } else if (filter == 'completed') {
-      filteredTasks = taskProvider.tasks.where((task) => task.isCompleted).toList();
-    } else {
-      filteredTasks = taskProvider.tasks.where((task) => task.isRepeated).toList();
+      bool matchesSearch = searchQuery.isEmpty ||
+          task.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          task.description.toLowerCase().contains(searchQuery.toLowerCase());
+
+      return matchesFilter && matchesSearch;
+    }).toList();
+
+    // Sort tasks based on sortOption
+    if (sortOption == 'date') {
+      filteredTasks.sort((a, b) => a.dueDate.compareTo(b.dueDate));
+    } else if (sortOption == 'title') {
+      filteredTasks.sort((a, b) => a.title.compareTo(b.title));
     }
 
     return ListView.builder(

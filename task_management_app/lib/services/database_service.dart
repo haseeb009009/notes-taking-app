@@ -9,7 +9,7 @@ class DatabaseService {
   static Database? _database;
 
   DatabaseService._internal();
-
+ 
   factory DatabaseService() {
     return _instance;
   }

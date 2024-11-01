@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../models/task_model.dart';
 import '../services/database_service.dart';
+import '../services/notification_service.dart';
 
 class TaskProvider with ChangeNotifier {
   List<Task> _tasks = [];
@@ -23,6 +24,16 @@ class TaskProvider with ChangeNotifier {
     await _dbService.insertTask(task);
     _tasks.add(task);
     notifyListeners();
+
+    // Schedule notification if the due date is in the future
+    if (task.dueDate.isAfter(DateTime.now())) {
+      await NotificationService.showNotification(
+        id: task.id ?? 0,
+        title: 'Task Reminder',
+        body: 'Don\'t forget your task: ${task.title}',
+        scheduledDate: task.dueDate,
+      );
+    }
   }
 
   Future<void> updateTask(Task task) async {
