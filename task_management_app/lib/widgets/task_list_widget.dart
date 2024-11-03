@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/task_provider.dart';
 import '../models/task_model.dart';
-import '../screens/task_detail_screen.dart'; // Import TaskDetailScreen
+import '../screens/task_detail_screen.dart';
 
 class TaskListWidget extends StatelessWidget {
   final String filter;
@@ -21,6 +21,8 @@ class TaskListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
+
+    // Filter and search tasks based on filter and searchQuery
     List<Task> filteredTasks = taskProvider.tasks.where((task) {
       bool matchesFilter = filter == 'today'
           ? task.dueDate.day == DateTime.now().day && !task.isCompleted
@@ -46,26 +48,39 @@ class TaskListWidget extends StatelessWidget {
       itemCount: filteredTasks.length,
       itemBuilder: (context, index) {
         final task = filteredTasks[index];
-        return InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TaskDetailScreen(task: task),
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            elevation: 2,
+            child: ListTile(
+              title: Text(
+                task.title,
+                style: TextStyle(
+                  color: task.isCompleted ? Colors.grey : Theme.of(context).textTheme.bodyLarge!.color,
+                  decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                ),
               ),
-            );
-          },
-          child: ListTile(
-            title: Text(task.title),
-            subtitle: Text(task.description),
-            trailing: IconButton(
-              icon: Icon(
-                task.isCompleted ? Icons.check_circle : Icons.circle_outlined,
-                color: task.isCompleted ? Colors.green : Colors.grey,
+              subtitle: Text(task.description),
+              trailing: IconButton(
+                icon: Icon(
+                  task.isCompleted ? Icons.check_circle : Icons.circle_outlined,
+                  color: task.isCompleted ? Colors.green : Colors.grey,
+                ),
+                onPressed: () {
+                  taskProvider.updateTask(
+                    task.copyWith(isCompleted: !task.isCompleted),
+                  );
+                },
               ),
-              onPressed: () {
-                taskProvider.updateTask(
-                  task.copyWith(isCompleted: !task.isCompleted),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TaskDetailScreen(task: task),
+                  ),
                 );
               },
             ),

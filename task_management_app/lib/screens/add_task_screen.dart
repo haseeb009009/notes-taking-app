@@ -1,14 +1,14 @@
 // lib/screens/add_task_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../providers/task_provider.dart';
 import '../models/task_model.dart';
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
- 
+
   @override
   State<AddTaskScreen> createState() => _AddTaskScreenState();
 }
@@ -61,17 +61,32 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Title'),
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                  filled: true,
+                  fillColor: Theme.of(context).cardColor,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter a title' : null,
               ),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  filled: true,
+                  fillColor: Theme.of(context).cardColor,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
                 validator: (value) =>
                     value!.isEmpty ? 'Please enter a description' : null,
               ),
-              const SizedBox(height: 16.0),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -79,6 +94,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       _selectedDate == null
                           ? 'Select Due Date'
                           : DateFormat.yMd().format(_selectedDate!),
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
                   TextButton(
@@ -87,7 +103,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 8.0),
               Row(
                 children: [
                   Checkbox(
@@ -101,9 +116,15 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   const Text('Repeat Task'),
                 ],
               ),
-              const SizedBox(height: 16.0),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => _saveTask(context),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                ),
                 child: const Text('Save Task'),
               ),
             ],
