@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:timezone/data/latest.dart' as tz; // Import timezone data
 import 'providers/task_provider.dart';
 import 'screens/home_screen.dart';
 import 'services/notification_service.dart';
@@ -9,13 +10,14 @@ import 'services/theme_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones(); // Add this line to initialize timezone data
   await NotificationService.initialize();
 
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
