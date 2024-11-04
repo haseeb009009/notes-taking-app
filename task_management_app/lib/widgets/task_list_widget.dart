@@ -22,13 +22,26 @@ class TaskListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
 
-    // Filter and search tasks based on filter and searchQuery
+    // Filter tasks based on the selected filter (today, completed, repeated)
     List<Task> filteredTasks = taskProvider.tasks.where((task) {
-      bool matchesFilter = filter == 'today'
-          ? task.dueDate.day == DateTime.now().day && !task.isCompleted
-          : filter == 'completed'
-              ? task.isCompleted
-              : task.isRepeated;
+      bool matchesFilter = false;
+
+      // Filter tasks for "Today" tab
+      if (filter == 'today') {
+        final now = DateTime.now();
+        matchesFilter = task.dueDate.year == now.year &&
+            task.dueDate.month == now.month &&
+            task.dueDate.day == now.day &&
+            !task.isCompleted;
+      }
+      // Filter tasks for "Completed" tab
+      else if (filter == 'completed') {
+        matchesFilter = task.isCompleted;
+      }
+      // Filter tasks for "Repeated" tab
+      else if (filter == 'repeated') {
+        matchesFilter = task.isRepeated && !task.isCompleted;
+      }
 
       bool matchesSearch = searchQuery.isEmpty ||
           task.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
@@ -36,13 +49,6 @@ class TaskListWidget extends StatelessWidget {
 
       return matchesFilter && matchesSearch;
     }).toList();
-
-    // Sort tasks based on sortOption
-    if (sortOption == 'date') {
-      filteredTasks.sort((a, b) => a.dueDate.compareTo(b.dueDate));
-    } else if (sortOption == 'title') {
-      filteredTasks.sort((a, b) => a.title.compareTo(b.title));
-    }
 
     return ListView.builder(
       itemCount: filteredTasks.length,
@@ -59,8 +65,11 @@ class TaskListWidget extends StatelessWidget {
               title: Text(
                 task.title,
                 style: TextStyle(
-                  color: task.isCompleted ? Colors.grey : Theme.of(context).textTheme.bodyLarge!.color,
-                  decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                  color: task.isCompleted
+                      ? Colors.grey
+                      : Theme.of(context).textTheme.bodyLarge!.color,
+                  decoration:
+                      task.isCompleted ? TextDecoration.lineThrough : null,
                 ),
               ),
               subtitle: Text(task.description),
@@ -70,18 +79,25 @@ class TaskListWidget extends StatelessWidget {
                   color: task.isCompleted ? Colors.green : Colors.grey,
                 ),
                 onPressed: () {
-                  taskProvider.updateTask(
-                    task.copyWith(isCompleted: !task.isCompleted),
-                  );
+                  try {
+                    taskProvider
+                        .toggleTaskCompletion(task); // Toggle task complete
+                  } catch (e) {
+                    print("Error toggling task completion: $e");
+                  }
                 },
               ),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TaskDetailScreen(task: task),
-                  ),
-                );
+                try {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TaskDetailScreen(task: task),
+                    ),
+                  );
+                } catch (e) {
+                  print("Error navigating to TaskDetailScreen: $e");
+                }
               },
             ),
           ),

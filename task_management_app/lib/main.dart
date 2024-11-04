@@ -34,11 +34,11 @@ class MyApp extends StatelessWidget {
             themeMode: themeService.currentTheme,
             theme: ThemeData(
               brightness: Brightness.light,
-              primarySwatch: Colors.deepPurple,
+              primarySwatch: Colors.blueGrey,
               textTheme: GoogleFonts.robotoTextTheme(),
               scaffoldBackgroundColor: Colors.grey[200],
               appBarTheme: const AppBarTheme(
-                backgroundColor: Colors.purple,
+                backgroundColor: Color.fromARGB(255, 21, 0, 253),
                 foregroundColor: Colors.white,
               ),
               cardColor: Colors.white,
@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
               brightness: Brightness.dark,
               primarySwatch: Colors.teal,
               textTheme: GoogleFonts.robotoTextTheme(),
-              scaffoldBackgroundColor: Colors.grey[900],
+              scaffoldBackgroundColor: const Color.fromARGB(255, 255, 255, 255),
               appBarTheme: const AppBarTheme(
                 backgroundColor: Colors.black,
                 foregroundColor: Color.fromARGB(255, 255, 7, 7),

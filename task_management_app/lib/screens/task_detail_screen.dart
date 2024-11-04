@@ -1,9 +1,7 @@
 // lib/screens/task_detail_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../models/task_model.dart';
-import '../providers/task_provider.dart';
 
 class TaskDetailScreen extends StatelessWidget {
   final Task task;
@@ -12,75 +10,39 @@ class TaskDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final taskProvider = Provider.of<TaskProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(task.title),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
               task.description,
               style: const TextStyle(fontSize: 16),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: task.subtasks.length,
-              itemBuilder: (context, index) {
-                final subtask = task.subtasks[index];
-                return ListTile(
-                  title: Text(subtask.title),
-                  leading: Checkbox(
-                    value: subtask.isCompleted,
-                    onChanged: (value) {
-                      final updatedSubtask = Subtask(
-                        id: subtask.id,
-                        title: subtask.title,
-                        isCompleted: value!,
-                      );
-                      taskProvider.updateSubtask(task, updatedSubtask);
-                    },
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      taskProvider.deleteSubtask(task, subtask.id!);
-                    },
-                  ),
-                );
-              },
+            const SizedBox(height: 16),
+            Text(
+              'Due Date: ${task.dueDate.toLocal()}',
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: TextEditingController(),
-                    decoration: const InputDecoration(
-                      labelText: 'Add Subtask',
-                      border: OutlineInputBorder(),
-                    ),
-                    onSubmitted: (value) {
-                      if (value.isNotEmpty) {
-                        final newSubtask = Subtask(
-                          title: value,
-                          isCompleted: false,
-                        );
-                        taskProvider.addSubtask(task, newSubtask);
-                      }
-                    },
-                  ),
+            const SizedBox(height: 16),
+            Text(
+              'Status: ${task.isCompleted ? "Completed" : "Pending"}',
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            ),
+            if (task.isRepeated)
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: Text(
+                  'Repeats: Yes',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
-              ],
-            ),
-          ),
-        ],
+              ),
+          ],
+        ),
       ),
     );
   }

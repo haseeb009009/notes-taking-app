@@ -10,9 +10,7 @@ class DatabaseService {
 
   DatabaseService._internal();
 
-  factory DatabaseService() {
-    return _instance;
-  }
+  factory DatabaseService() => _instance;
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -26,81 +24,37 @@ class DatabaseService {
       join(dbPath, 'task_management.db'),
       version: 1,
       onCreate: (db, version) async {
+        print('Creating tasks table...');
         await db.execute('''
-          CREATE TABLE tasks(
+          CREATE TABLE tasks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT,
+            title TEXT NOT NULL,
             description TEXT,
-            dueDate TEXT,
-            isCompleted INTEGER,
-            isRepeated INTEGER
-          )
-          ''');
-        await db.execute('''
-          CREATE TABLE subtasks(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            taskId INTEGER,
-            title TEXT,
-            isCompleted INTEGER,
-            FOREIGN KEY (taskId) REFERENCES tasks (id) ON DELETE CASCADE
+            dueDate TEXT NOT NULL,
+            isCompleted INTEGER DEFAULT 0,
+            isRepeated INTEGER DEFAULT 0
           )
           ''');
       },
     );
   }
 
-  // Insert a new task
+  // Insert a new task and print result
   Future<int> insertTask(Task task) async {
     final db = await database;
-    final taskId = await db.insert('tasks', task.toMap());
-
-    for (var subtask in task.subtasks) {
-      await insertSubtask(taskId, subtask);
-    }
-
+    int taskId = await db.insert('tasks', task.toMap());
+    print('Inserted task with ID: $taskId');
     return taskId;
   }
 
-  // Insert a new subtask linked to a task
-  Future<int> insertSubtask(int taskId, Subtask subtask) async {
-    final db = await database;
-    return await db.insert('subtasks', {
-      'taskId': taskId,
-      'title': subtask.title,
-      'isCompleted': subtask.isCompleted ? 1 : 0,
-    });
-  }
-
-  // Fetch all tasks with their subtasks
+  // Fetch tasks from the database and print result
   Future<List<Task>> fetchTasks() async {
     final db = await database;
     final taskMaps = await db.query('tasks');
-
-    List<Task> tasks = [];
-    for (var taskMap in taskMaps) {
-      final taskId = taskMap['id'] as int;
-      final subtasks = await fetchSubtasks(taskId);
-
-      tasks.add(Task.fromMap({
-        ...taskMap,
-        'subtasks': subtasks.map((subtask) => subtask.toMap()).toList(),
-      }));
-    }
-    return tasks;
+    print('Fetched tasks: $taskMaps'); // Print the tasks fetched
+    return taskMaps.map((taskMap) => Task.fromMap(taskMap)).toList();
   }
 
-  // Fetch all subtasks for a specific task
-  Future<List<Subtask>> fetchSubtasks(int taskId) async {
-    final db = await database;
-    final subtaskMaps =
-        await db.query('subtasks', where: 'taskId = ?', whereArgs: [taskId]);
-
-    return List.generate(subtaskMaps.length, (i) {
-      return Subtask.fromMap(subtaskMaps[i]);
-    });
-  }
-
-  // Update an existing task in the database
   Future<int> updateTask(Task task) async {
     final db = await database;
     return await db.update(
@@ -111,22 +65,10 @@ class DatabaseService {
     );
   }
 
-  // Update an existing subtask
-  Future<int> updateSubtask(Subtask subtask) async {
-    final db = await database;
-    return await db.update(
-      'subtasks',
-      subtask.toMap(),
-      where: 'id = ?',
-      whereArgs: [subtask.id],
-    );
-  }
-
-  // Delete a subtask by ID
-  Future<int> deleteSubtask(int id) async {
+  Future<int> deleteTask(int id) async {
     final db = await database;
     return await db.delete(
-      'subtasks',
+      'tasks',
       where: 'id = ?',
       whereArgs: [id],
     );
