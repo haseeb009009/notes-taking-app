@@ -8,7 +8,7 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => TaskProvider(),
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeService.lightTheme,
       darkTheme: ThemeService.darkTheme,
       themeMode: themeMode, // Applies current theme mode from provider
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }

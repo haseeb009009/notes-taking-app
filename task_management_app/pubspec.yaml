@@ -16,6 +16,7 @@ dependencies:
   share_plus: ^4.5.0
   csv: ^5.0.0
   pdf: ^3.6.1
+  timezone: ^0.8.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

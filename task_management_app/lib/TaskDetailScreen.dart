@@ -43,7 +43,7 @@ class TaskDetailScreen extends StatelessWidget {
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: Text('Delete Task'),
+              child: const Text('Delete Task'),
             ),
           ],
         ),
