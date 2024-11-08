@@ -6,11 +6,8 @@ import 'services/theme_service.dart';
 
 void main() {
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => TaskProvider()),
-        ChangeNotifierProvider(create: (context) => ThemeService()),
-      ],
+    ChangeNotifierProvider(
+      create: (context) => TaskProvider(),
       child: MyApp(),
     ),
   );
@@ -19,13 +16,13 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final themeService = Provider.of<ThemeService>(context);
+    final themeMode = Provider.of<TaskProvider>(context).themeMode;
 
     return MaterialApp(
       title: 'Task Management App',
-      theme: themeService.lightTheme,
-      darkTheme: themeService.darkTheme,
-      themeMode: themeService.themeMode,
+      theme: ThemeService.lightTheme,
+      darkTheme: ThemeService.darkTheme,
+      themeMode: themeMode, // Applies current theme mode from provider
       home: HomeScreen(),
     );
   }

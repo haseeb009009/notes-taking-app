@@ -14,14 +14,27 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  Future<void> showNotification(String title, String body) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+  Future<void> scheduleNotification(int id, String title, String body, DateTime scheduledTime) async {
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'task_channel',
       'Task Notifications',
       importance: Importance.high,
       priority: Priority.high,
     );
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(0, title, body, platformChannelSpecifics);
+    const NotificationDetails platformDetails = NotificationDetails(android: androidDetails);
+    
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      id,
+      title,
+      body,
+      scheduledTime,
+      platformDetails,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
+  Future<void> cancelNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
   }
 }

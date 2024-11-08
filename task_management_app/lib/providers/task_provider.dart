@@ -6,9 +6,12 @@ import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/task_model.dart';
 import '../services/database_service.dart';
+import '../services/notification_service.dart';
 
 class TaskProvider with ChangeNotifier {
   List<TaskModel> _tasks = [];
+  ThemeMode _themeMode = ThemeMode.system; // ThemeMode variable to manage theme
+
   final DatabaseService _databaseService = DatabaseService();
 
   TaskProvider() {
@@ -16,6 +19,13 @@ class TaskProvider with ChangeNotifier {
   }
 
   List<TaskModel> get tasks => _tasks;
+  ThemeMode get themeMode => _themeMode; // Getter for ThemeMode
+
+  // Method to set and toggle the theme mode
+  void setThemeMode(ThemeMode mode) {
+    _themeMode = mode;
+    notifyListeners();
+  }
 
   // Method to load tasks from the database
   Future<void> loadTasks() async {
@@ -23,24 +33,37 @@ class TaskProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Method to add a task and refresh the list
+  // Method to add a task with notification and refresh the list
   void addTask(TaskModel task) async {
     await _databaseService.insertTask(task);
+    NotificationService().scheduleNotification(
+      task.id!,
+      "Task Reminder: ${task.title}",
+      "Don't forget your task due on ${task.dueDate}",
+      task.dueDate,
+    );
+    loadTasks();
+  }
+
+  // Method to update a task, reschedule notification, and refresh the list
+  void updateTask(TaskModel task) async {
+    await _databaseService.updateTask(task);
+    NotificationService().cancelNotification(task.id!); // Cancel old notification
+    NotificationService().scheduleNotification(
+      task.id!,
+      "Updated Task Reminder: ${task.title}",
+      "Due on ${task.dueDate}",
+      task.dueDate,
+    );
     loadTasks();
   }
 
   // Method to delete a task and refresh the list
   void deleteTask(int id) async {
     await _databaseService.deleteTask(id);
+    NotificationService().cancelNotification(id); // Cancel notification on delete
     loadTasks();
   }
-  //updatesubtask
-  void updateSubtasks(TaskModel task, List<String> newSubtasks, List<bool> newCompletionStatus) async {
-  task.subtasks = newSubtasks;
-  task.subtaskCompletion = newCompletionStatus;
-  await _databaseService.updateTask(task);
-  loadTasks(); // Refresh the task list
-}
 
   // Method to toggle task completion status and refresh the list
   void toggleCompletion(TaskModel task) async {
@@ -51,14 +74,22 @@ class TaskProvider with ChangeNotifier {
 
   // Method to toggle a subtask's completion status
   void toggleSubtaskCompletion(TaskModel task, int index) {
-    task.subtasks[index].isComplete = !task.subtasks[index].isComplete;
+    task.subtaskCompletion[index] = !task.subtaskCompletion[index];
     notifyListeners();
+  }
+
+  // Method to update subtasks and their completion statuses
+  void updateSubtasks(TaskModel task, List<String> newSubtasks, List<bool> newCompletionStatus) async {
+    task.subtasks = newSubtasks;
+    task.subtaskCompletion = newCompletionStatus;
+    await _databaseService.updateTask(task);
+    loadTasks(); // Refresh the task list
   }
 
   // Method to calculate task progress based on completed subtasks
   double getTaskProgress(TaskModel task) {
     if (task.subtasks.isEmpty) return 0.0;
-    final completed = task.subtasks.where((s) => s.isComplete).length;
+    final completed = task.subtaskCompletion.where((c) => c).length;
     return completed / task.subtasks.length;
   }
 
@@ -109,7 +140,7 @@ class TaskProvider with ChangeNotifier {
                     pw.Text('Description: ${task.description}'),
                     pw.Text('Due Date: ${task.dueDate.toLocal()}'),
                     pw.Text('Completed: ${task.isCompleted ? 'Yes' : 'No'}'),
-                    pw.Text('Repeated: ${task.isRepeated ? 'Yes' : 'No'}'),
+                    pw.Text('Repeated: ${task.isRepeated ? 'Yes' : 'No'}),
                     pw.Divider(),
                   ],
                 ),
