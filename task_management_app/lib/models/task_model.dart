@@ -1,18 +1,19 @@
+//lib/models/task_model.dart
 class TaskModel {
-  int? id;
-  String title;
-  String description;
-  DateTime dueDate;
-  bool isCompleted;
-  bool isRepeated;
+  final int? id;
+  final String title;
+  final String description;
+  final DateTime dueDate;
+  final bool isRepeated;
+  final bool isCompleted;
 
   TaskModel({
     this.id,
     required this.title,
     required this.description,
     required this.dueDate,
-    this.isCompleted = false,
     this.isRepeated = false,
+    this.isCompleted = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -21,8 +22,8 @@ class TaskModel {
       'title': title,
       'description': description,
       'dueDate': dueDate.toIso8601String(),
-      'isCompleted': isCompleted ? 1 : 0,
       'isRepeated': isRepeated ? 1 : 0,
+      'isCompleted': isCompleted ? 1 : 0,
     };
   }
 
@@ -32,8 +33,8 @@ class TaskModel {
       title: map['title'],
       description: map['description'],
       dueDate: DateTime.parse(map['dueDate']),
-      isCompleted: map['isCompleted'] == 1,
       isRepeated: map['isRepeated'] == 1,
+      isCompleted: map['isCompleted'] == 1,
     );
   }
 }

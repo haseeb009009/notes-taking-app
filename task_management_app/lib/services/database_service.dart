@@ -1,35 +1,41 @@
+//lib/services/database_service.dart
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/task_model.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
+  factory DatabaseService() => _instance;
   DatabaseService._internal();
 
-  factory DatabaseService() => _instance;
-
-  Database? _db;
+  Database? _database;
 
   Future<Database> get database async {
-    if (_db != null) return _db!;
-    _db = await _initDB();
-    return _db!;
+    if (_database != null) return _database!;
+    _database = await _initDatabase();
+    return _database!;
   }
 
-  Future<Database> _initDB() async {
-    String path = join(await getDatabasesPath(), 'tasks.db');
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+  Future<Database> _initDatabase() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'tasks.db');
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
+    );
   }
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE tasks (
+      CREATE TABLE tasks(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         description TEXT,
         dueDate TEXT,
-        isCompleted INTEGER,
-        isRepeated INTEGER
+        isRepeated INTEGER,
+        isCompleted INTEGER
       )
     ''');
   }
@@ -41,13 +47,13 @@ class DatabaseService {
 
   Future<List<TaskModel>> getTasks() async {
     final db = await database;
-    final maps = await db.query('tasks');
-    return List.generate(maps.length, (i) => TaskModel.fromMap(maps[i]));
+    final tasks = await db.query('tasks');
+    return tasks.map((task) => TaskModel.fromMap(task)).toList();
   }
 
-  Future<void> updateTask(TaskModel task) async {
+  Future<int> updateTask(TaskModel task) async {
     final db = await database;
-    await db.update(
+    return await db.update(
       'tasks',
       task.toMap(),
       where: 'id = ?',
@@ -55,9 +61,9 @@ class DatabaseService {
     );
   }
 
-  Future<void> deleteTask(int id) async {
+  Future<int> deleteTask(int id) async {
     final db = await database;
-    await db.delete(
+    return await db.delete(
       'tasks',
       where: 'id = ?',
       whereArgs: [id],

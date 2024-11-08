@@ -1,3 +1,5 @@
+//lib/screens/add_task_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/task_model.dart';
@@ -11,18 +13,30 @@ class AddScreen extends StatefulWidget {
 class _AddScreenState extends State<AddScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final List<TextEditingController> _subtaskControllers = [];
   DateTime _selectedDate = DateTime.now();
   bool _isRepeated = false;
+
+  void _addSubtaskField() {
+    setState(() {
+      _subtaskControllers.add(TextEditingController());
+    });
+  }
 
   void _submitTask() {
     if (_titleController.text.isEmpty || _descriptionController.text.isEmpty) {
       return;
     }
+    // Gather subtasks from the subtask controllers
+    final subtasks =
+        _subtaskControllers.map((controller) => controller.text).toList();
     final task = TaskModel(
       title: _titleController.text,
       description: _descriptionController.text,
       dueDate: _selectedDate,
       isRepeated: _isRepeated,
+      subtasks: subtasks,
+      subtaskCompletion: List.filled(subtasks.length, false),
     );
     Provider.of<TaskProvider>(context, listen: false).addTask(task);
     Navigator.of(context).pop();
@@ -82,6 +96,23 @@ class _AddScreenState extends State<AddScreen> {
                 Text('Repeat Task')
               ],
             ),
+            // Display subtask input fields
+            Column(
+              children: _subtaskControllers
+                  .map((controller) => Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: TextField(
+                          controller: controller,
+                          decoration: InputDecoration(labelText: 'Subtask'),
+                        ),
+                      ))
+                  .toList(),
+            ),
+            TextButton(
+              onPressed: _addSubtaskField,
+              child: Text('Add Subtask'),
+            ),
+            SizedBox(height: 16),
             ElevatedButton(
               onPressed: _submitTask,
               child: Text('Add Task'),
