@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/task_model.dart';
 import '../providers/task_provider.dart';
-import 'task_detail_screen.dart';
-import 'task_form_screen.dart';
+import '../screens/task_detail_screen.dart';
+import '../TaskFormScreen.dart';
 
 class TaskListScreen extends StatelessWidget {
+  const TaskListScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Task List')),
+      appBar: AppBar(title: const Text('Task List')),
       body: Consumer<TaskProvider>(
         builder: (context, taskProvider, child) {
           final tasks = taskProvider.tasks;
@@ -40,7 +42,7 @@ class TaskListScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
         onPressed: () {
           Navigator.push(
             context,

@@ -1,40 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/task_provider.dart';
-import '../screens/add_task_screen.dart';
+import '../add_task_screen.dart';
 import '../screens/task_detail_screen.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tasks'),
+        title: const Text('Tasks'),
         actions: [
           IconButton(
-            icon: Icon(Icons.file_download),
+            icon: const Icon(Icons.file_download),
             tooltip: 'Export to CSV',
             onPressed: () async {
               await taskProvider.exportToCSV();
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Tasks exported to CSV')),
+                const SnackBar(content: Text('Tasks exported to CSV')),
               );
             },
           ),
           IconButton(
-            icon: Icon(Icons.picture_as_pdf),
+            icon: const Icon(Icons.picture_as_pdf),
             tooltip: 'Export to PDF',
             onPressed: () async {
               await taskProvider.exportToPDF();
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Tasks exported to PDF')),
+                const SnackBar(content: Text('Tasks exported to PDF')),
               );
             },
           ),
           IconButton(
-            icon: Icon(Icons.brightness_6),
+            icon: const Icon(Icons.brightness_6),
             tooltip: 'Toggle Theme',
             onPressed: () {
               // Toggle theme between light and dark
@@ -43,7 +45,7 @@ class HomeScreen extends StatelessWidget {
             },
           ),
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => AddTaskScreen()),
@@ -57,7 +59,7 @@ class HomeScreen extends StatelessWidget {
           final tasks = taskProvider.tasks;
 
           return tasks.isEmpty
-              ? Center(child: Text('No tasks available'))
+              ? const Center(child: Text('No tasks available'))
               : ListView.builder(
                   itemCount: tasks.length,
                   itemBuilder: (context, index) {

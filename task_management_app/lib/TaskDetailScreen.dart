@@ -6,7 +6,7 @@ import '../providers/task_provider.dart';
 class TaskDetailScreen extends StatelessWidget {
   final TaskModel task;
 
-  TaskDetailScreen({required this.task});
+  const TaskDetailScreen({super.key, required this.task});
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +18,10 @@ class TaskDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Description: ${task.description}'),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text('Due Date: ${task.dueDate.toLocal()}'),
-            SizedBox(height: 10),
-            Text('Subtasks:'),
+            const SizedBox(height: 10),
+            const Text('Subtasks:'),
             ...task.subtasks.asMap().entries.map((entry) {
               int idx = entry.key;
               String subtask = entry.value;
@@ -35,15 +35,15 @@ class TaskDetailScreen extends StatelessWidget {
                   }
                 },
               );
-            }).toList(),
-            SizedBox(height: 20),
+            }),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 context.read<TaskProvider>().deleteTask(task.id!);
                 Navigator.pop(context);
               },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               child: Text('Delete Task'),
-              style: ElevatedButton.styleFrom(primary: Colors.red),
             ),
           ],
         ),

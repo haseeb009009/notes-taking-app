@@ -6,7 +6,7 @@ import '../providers/task_provider.dart';
 class TaskFormScreen extends StatefulWidget {
   final TaskModel? task;
 
-  TaskFormScreen({this.task});
+  const TaskFormScreen({super.key, this.task});
 
   @override
   _TaskFormScreenState createState() => _TaskFormScreenState();
@@ -18,8 +18,8 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   String _description = '';
   DateTime _dueDate = DateTime.now();
   bool _isRepeated = false;
-  List<String> _subtasks = [];
-  List<bool> _subtaskCompletion = [];
+  final List<String> _subtasks = [];
+  final List<bool> _subtaskCompletion = [];
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
@@ -63,19 +63,19 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
           child: Column(
             children: [
               TextFormField(
-                decoration: InputDecoration(labelText: 'Title'),
+                decoration: const InputDecoration(labelText: 'Title'),
                 initialValue: widget.task?.title,
                 validator: (value) => value!.isEmpty ? 'Please enter a title' : null,
                 onSaved: (value) => _title = value!,
               ),
               TextFormField(
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
                 initialValue: widget.task?.description,
                 onSaved: (value) => _description = value!,
               ),
               ListTile(
                 title: Text('Due Date: ${_dueDate.toLocal()}'),
-                trailing: Icon(Icons.calendar_today),
+                trailing: const Icon(Icons.calendar_today),
                 onTap: () async {
                   final date = await showDatePicker(
                     context: context,
@@ -89,7 +89,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                 },
               ),
               CheckboxListTile(
-                title: Text('Repeated'),
+                title: const Text('Repeated'),
                 value: _isRepeated,
                 onChanged: (value) {
                   setState(() => _isRepeated = value!);

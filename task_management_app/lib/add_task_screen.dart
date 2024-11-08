@@ -4,6 +4,8 @@ import '../models/task_model.dart';
 import '../providers/task_provider.dart';
 
 class AddTaskScreen extends StatefulWidget {
+  const AddTaskScreen({super.key});
+
   @override
   _AddTaskScreenState createState() => _AddTaskScreenState();
 }
@@ -58,26 +60,26 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add Task')),
+      appBar: AppBar(title: const Text('Add Task')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: _titleController,
-              decoration: InputDecoration(labelText: 'Task Title'),
+              decoration: const InputDecoration(labelText: 'Task Title'),
             ),
             TextField(
               controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
+              decoration: const InputDecoration(labelText: 'Description'),
             ),
             ListTile(
               title: Text('Due Date: ${_selectedDate.toLocal()}'.split(' ')[0]),
-              trailing: Icon(Icons.calendar_today),
+              trailing: const Icon(Icons.calendar_today),
               onTap: _pickDate,
             ),
             CheckboxListTile(
-              title: Text('Repeat Task'),
+              title: const Text('Repeat Task'),
               value: _isRepeated,
               onChanged: (value) {
                 setState(() {
@@ -85,21 +87,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 });
               },
             ),
-            SizedBox(height: 10),
-            Text('Subtasks:', style: TextStyle(fontSize: 16)),
+            const SizedBox(height: 10),
+            const Text('Subtasks:', style: TextStyle(fontSize: 16)),
             Column(
               children: _subtaskControllers.map((controller) => TextField(
                 controller: controller,
-                decoration: InputDecoration(labelText: 'Subtask'),
+                decoration: const InputDecoration(labelText: 'Subtask'),
               )).toList(),
             ),
             TextButton(
               onPressed: _addSubtaskField,
-              child: Text('Add Subtask'),
+              child: const Text('Add Subtask'),
             ),
             ElevatedButton(
               onPressed: _submitTask,
-              child: Text('Add Task'),
+              child: const Text('Add Task'),
             ),
           ],
         ),
