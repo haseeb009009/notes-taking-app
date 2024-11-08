@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:pdf/widgets.dart' as pw; // pdf.dart removed since it was unused
+import 'package:pdf/widgets.dart' as pw;
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
 import '../models/task_model.dart';
@@ -10,11 +10,10 @@ import '../services/notification_service.dart';
 class TaskProvider with ChangeNotifier {
   List<TaskModel> _tasks = [];
   ThemeMode _themeMode = ThemeMode.system;
-
   final DatabaseService _databaseService = DatabaseService();
 
   TaskProvider() {
-    loadTasks();
+    loadTasks(); // Load tasks each time TaskProvider is initialized
   }
 
   List<TaskModel> get tasks => _tasks;
@@ -25,20 +24,44 @@ class TaskProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // Loads tasks from the database and adds a default task if the list is empty
   Future<void> loadTasks() async {
-    _tasks = await _databaseService.getTasks();
-    notifyListeners();
+    _tasks = await _databaseService.getTasks(); // Fetch tasks from database
+
+    // Check if there are no tasks, add a default task if list is empty
+    if (_tasks.isEmpty) {
+      await _addDefaultTask(); // Add a default task
+      _tasks = await _databaseService
+          .getTasks(); // Reload tasks after adding the default
+    }
+
+    notifyListeners(); // Notify listeners that tasks have been updated
+  }
+
+  // Adds a default task for when the task list is empty
+  Future<void> _addDefaultTask() async {
+    TaskModel defaultTask = TaskModel(
+      title: 'Welcome to Task Manager!',
+      description: 'This is your first task. Edit or delete it as you like.',
+      dueDate: DateTime.now().add(const Duration(days: 1)), // Due tomorrow
+      isCompleted: false,
+      isRepeated: false,
+      subtasks: ['Get started', 'Explore features'],
+      subtaskCompletion: [false, false],
+    );
+
+    addTask(defaultTask); // Add the default task
   }
 
   void addTask(TaskModel task) async {
-    await _databaseService.insertTask(task);
+    await _databaseService.insertTask(task); // Insert task into the database
     NotificationService().scheduleNotification(
       task.id!,
       "Task Reminder: ${task.title}",
       "Don't forget your task due on ${task.dueDate}",
       task.dueDate,
     );
-    loadTasks();
+    loadTasks(); // Reloads tasks
   }
 
   void updateTask(TaskModel task) async {
@@ -86,8 +109,10 @@ class TaskProvider with ChangeNotifier {
 
   List<TaskModel> get todayTasks =>
       _tasks.where((task) => task.dueDate == DateTime.now()).toList();
+
   List<TaskModel> get completedTasks =>
       _tasks.where((task) => task.isCompleted).toList();
+
   List<TaskModel> get repeatedTasks =>
       _tasks.where((task) => task.isRepeated).toList();
 
