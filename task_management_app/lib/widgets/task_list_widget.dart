@@ -17,38 +17,20 @@ class TaskListWidget extends StatelessWidget {
     this.searchQuery = "",
     this.sortOption = "none",
   });
+  
+  get filteredTasks => null;
 
   @override
   Widget build(BuildContext context) {
     final taskProvider = Provider.of<TaskProvider>(context);
 
     // Filter tasks based on the selected filter (today, completed, repeated)
-    List<Task> filteredTasks = taskProvider.tasks.where((task) {
-      bool matchesFilter = false;
-
-      // Filter tasks for "Today" tab
-      if (filter == 'today') {
-        final now = DateTime.now();
-        matchesFilter = task.dueDate.year == now.year &&
-            task.dueDate.month == now.month &&
-            task.dueDate.day == now.day &&
-            !task.isCompleted;
-      }
-      // Filter tasks for "Completed" tab
-      else if (filter == 'completed') {
-        matchesFilter = task.isCompleted;
-      }
-      // Filter tasks for "Repeated" tab
-      else if (filter == 'repeated') {
-        matchesFilter = task.isRepeated && !task.isCompleted;
-      }
-
-      bool matchesSearch = searchQuery.isEmpty ||
-          task.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          task.description.toLowerCase().contains(searchQuery.toLowerCase());
-
-      return matchesFilter && matchesSearch;
-    }).toList();
+   List<Task> sortedTasks = [...filteredTasks];
+if (sortOption == 'date') {
+  sortedTasks.sort((a, b) => a.dueDate.compareTo(b.dueDate));
+} else if (sortOption == 'title') {
+  sortedTasks.sort((a, b) => a.title.compareTo(b.title));
+}
 
     return ListView.builder(
       itemCount: filteredTasks.length,

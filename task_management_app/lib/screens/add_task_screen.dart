@@ -1,10 +1,12 @@
 // lib/screens/add_task_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart';  // For date formatting
 import 'package:provider/provider.dart';
 import '../providers/task_provider.dart';
 import '../models/task_model.dart';
+import '../services/notification_service.dart';  // For notifications
+
 
 class AddTaskScreen extends StatefulWidget {
   const AddTaskScreen({super.key});
@@ -34,18 +36,29 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     }
   }
 
-  void _saveTask(BuildContext context) {
-    if (_formKey.currentState!.validate() && _selectedDate != null) {
-      final newTask = Task(
-        title: _titleController.text,
-        description: _descriptionController.text,
-        dueDate: _selectedDate!,
-        isRepeated: _isRepeated,
-      );
-      Provider.of<TaskProvider>(context, listen: false).addTask(newTask);
-      Navigator.pop(context); // Close the Add Task Screen
-    }
+void _saveTask(BuildContext context) async {
+  if (_formKey.currentState!.validate() && _selectedDate != null) {
+    final newTask = Task(
+      title: _titleController.text,
+      description: _descriptionController.text,
+      dueDate: _selectedDate!,
+      isRepeated: _isRepeated,
+    );
+
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
+    await taskProvider.addTask(newTask);
+
+    // Schedule a notification for the task
+    await NotificationService.showNotification(
+      id: newTask.id!,
+      title: newTask.title,
+      body: newTask.description,
+      scheduledDate: newTask.dueDate,
+    );
+    Navigator.pop(context);
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -135,3 +148,4 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 }
+ 

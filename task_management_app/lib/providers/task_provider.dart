@@ -1,8 +1,8 @@
 // lib/providers/task_provider.dart
-
 import 'package:flutter/material.dart';
 import '../models/task_model.dart';
 import '../services/database_service.dart';
+
 
 class TaskProvider with ChangeNotifier {
   List<Task> _tasks = [];
@@ -31,8 +31,16 @@ class TaskProvider with ChangeNotifier {
   // Toggle task completion status and print any errors
   Future<void> toggleTaskCompletion(Task task) async {
     try {
-      final updatedTask = task.copyWith(isCompleted: !task.isCompleted);
-      await updateTask(updatedTask);
+      if (task.isRepeated) {
+        // If repeated, schedule the next occurrence
+        final updatedTask =
+            task.copyWith(dueDate: task.dueDate.add(const Duration(days: 1)));
+        await updateTask(updatedTask);
+      } else {
+        // If not repeated, mark as completed
+        final updatedTask = task.copyWith(isCompleted: !task.isCompleted);
+        await updateTask(updatedTask);
+      }
     } catch (e) {
       print("Error in toggleTaskCompletion: $e");
     }

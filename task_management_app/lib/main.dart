@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+// ignore: depend_on_referenced_packages
 import 'package:timezone/data/latest.dart' as tz; // Import timezone data
 import 'providers/task_provider.dart';
 import 'services/theme_service.dart';

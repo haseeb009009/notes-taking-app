@@ -1,11 +1,14 @@
 // lib/screens/home_screen.dart
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_management_app/screens/add_task_screen.dart';
+import 'package:task_management_app/widgets/task_list_widget.dart';
 import '../providers/task_provider.dart';
+import '../services/export_service.dart';  // For export functionality
+import '../screens/add_task_screen.dart';
 import '../services/theme_service.dart';
-import '../widgets/task_list_widget.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -134,11 +137,31 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _exportTasks(BuildContext context, String format) async {
-    final tasks = Provider.of<TaskProvider>(context, listen: false).tasks;
-    // ExportService will handle exporting tasks as CSV or PDF (implementation required)
+void _exportTasks(BuildContext context, String format) async {
+  final tasks = Provider.of<TaskProvider>(context, listen: false).tasks;
+  if (tasks.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Tasks exported as ${format.toUpperCase()}!')),
+      const SnackBar(content: Text('No tasks to export!')),
+    );
+    return;
+  }
+
+  try {
+    File file;
+    if (format == 'csv') {
+      file = await ExportService.exportToCSV(tasks);
+    } else {
+      file = await ExportService.exportToPDF(tasks);
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Tasks exported to ${file.path}!')),
+    );
+  } catch (e) {
+    print("Export error: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Failed to export tasks!')),
     );
   }
+}
+
 }
