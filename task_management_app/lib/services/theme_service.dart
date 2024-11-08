@@ -1,16 +1,13 @@
-// lib/services/theme_service.dart
-
 import 'package:flutter/material.dart';
 
-class ThemeService with ChangeNotifier {
-  bool _isDarkMode = false;
+class ThemeService {
+  static final ThemeData lightTheme = ThemeData(
+    brightness: Brightness.light,
+    primarySwatch: Colors.blue,
+  );
 
-  bool get isDarkMode => _isDarkMode;
-
-  ThemeMode get currentTheme => _isDarkMode ? ThemeMode.dark : ThemeMode.light;
-
-  void toggleTheme() {
-    _isDarkMode = !_isDarkMode;
-    notifyListeners();
-  }
+  static final ThemeData darkTheme = ThemeData(
+    brightness: Brightness.dark,
+    primarySwatch: Colors.blue,
+  );
 }
