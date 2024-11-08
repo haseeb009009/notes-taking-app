@@ -45,7 +45,7 @@ class DatabaseService {
     return await db.insert('tasks', task.toMap());
   }
 
-  Future<List<TaskModel>> getTasks() async {
+  Future<List> getTasks() async {
     final db = await database;
     final tasks = await db.query('tasks');
     return tasks.map((task) => TaskModel.fromMap(task)).toList();

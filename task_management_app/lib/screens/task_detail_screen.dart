@@ -8,7 +8,7 @@ import '../providers/task_provider.dart';
 class TaskDetailScreen extends StatelessWidget {
   final TaskModel task;
 
-  TaskDetailScreen({required this.task});
+  const TaskDetailScreen({super.key, required this.task});
 
   @override
   Widget build(BuildContext context) {
@@ -19,13 +19,13 @@ class TaskDetailScreen extends StatelessWidget {
         title: Text(task.title),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit),
+            icon: const Icon(Icons.edit),
             onPressed: () {
               // Navigate to edit screen
             },
           ),
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () {
               taskProvider.deleteTask(task.id!);
               Navigator.of(context).pop();
@@ -40,13 +40,13 @@ class TaskDetailScreen extends StatelessWidget {
           children: [
             Text(
               task.title,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(task.description),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text('Due Date: ${task.dueDate.toLocal()}'),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(task.isRepeated ? 'Repeated Task' : 'One-Time Task'),
           ],
         ),
