@@ -1,5 +1,3 @@
-//lib/providers/task_provider.dart
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
@@ -19,38 +17,57 @@ class TaskProvider with ChangeNotifier {
 
   List<TaskModel> get tasks => _tasks;
 
+  // Method to load tasks from the database
   Future<void> loadTasks() async {
-    // Fetch tasks from the database
     _tasks = await _databaseService.getTasks();
     notifyListeners();
   }
 
-  Future<void> addTask(TaskModel task) async {
-    // Insert task into the database and reload tasks
+  // Method to add a task and refresh the list
+  void addTask(TaskModel task) async {
     await _databaseService.insertTask(task);
     loadTasks();
   }
 
-  Future<void> updateTask(TaskModel task) async {
-    // Update task in the database and reload tasks
-    await _databaseService.updateTask(task);
-    loadTasks();
-  }
-
-  Future<void> deleteTask(int id) async {
-    // Delete task from the database and reload tasks
+  // Method to delete a task and refresh the list
+  void deleteTask(int id) async {
     await _databaseService.deleteTask(id);
     loadTasks();
   }
+  //updatesubtask
+  void updateSubtasks(TaskModel task, List<String> newSubtasks, List<bool> newCompletionStatus) async {
+  task.subtasks = newSubtasks;
+  task.subtaskCompletion = newCompletionStatus;
+  await _databaseService.updateTask(task);
+  loadTasks(); // Refresh the task list
+}
 
-  Future<void> toggleCompletion(TaskModel task) async {
-    // Toggle completion status and update task in the database
+  // Method to toggle task completion status and refresh the list
+  void toggleCompletion(TaskModel task) async {
     task.isCompleted = !task.isCompleted;
     await _databaseService.updateTask(task);
     loadTasks();
   }
 
-  // Export to CSV
+  // Method to toggle a subtask's completion status
+  void toggleSubtaskCompletion(TaskModel task, int index) {
+    task.subtasks[index].isComplete = !task.subtasks[index].isComplete;
+    notifyListeners();
+  }
+
+  // Method to calculate task progress based on completed subtasks
+  double getTaskProgress(TaskModel task) {
+    if (task.subtasks.isEmpty) return 0.0;
+    final completed = task.subtasks.where((s) => s.isComplete).length;
+    return completed / task.subtasks.length;
+  }
+
+  // Filtered task lists
+  List<TaskModel> get todayTasks => _tasks.where((task) => task.dueDate == DateTime.now()).toList();
+  List<TaskModel> get completedTasks => _tasks.where((task) => task.isCompleted).toList();
+  List<TaskModel> get repeatedTasks => _tasks.where((task) => task.isRepeated).toList();
+
+  // Export tasks to CSV format
   Future<void> exportToCSV() async {
     List<List<String>> rows = [
       ['ID', 'Title', 'Description', 'Due Date', 'Completed', 'Repeated']
@@ -75,7 +92,7 @@ class TaskProvider with ChangeNotifier {
     print("CSV Exported: $path");
   }
 
-  // Export to PDF
+  // Export tasks to PDF format
   Future<void> exportToPDF() async {
     final pdf = pw.Document();
     pdf.addPage(
@@ -88,9 +105,7 @@ class TaskProvider with ChangeNotifier {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    pw.Text('Task: ${task.title}',
-                        style: pw.TextStyle(
-                            fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                    pw.Text('Task: ${task.title}', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
                     pw.Text('Description: ${task.description}'),
                     pw.Text('Due Date: ${task.dueDate.toLocal()}'),
                     pw.Text('Completed: ${task.isCompleted ? 'Yes' : 'No'}'),

@@ -1,28 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/task_model.dart';
 import '../providers/task_provider.dart';
-import 'add_task_screen.dart';
 import 'task_detail_screen.dart';
+import 'task_form_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class TaskListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final taskProvider = Provider.of<TaskProvider>(context);
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Tasks'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => AddTaskScreen()),
-              );
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text('Task List')),
       body: Consumer<TaskProvider>(
         builder: (context, taskProvider, child) {
           final tasks = taskProvider.tasks;
@@ -31,15 +18,17 @@ class HomeScreen extends StatelessWidget {
             itemCount: tasks.length,
             itemBuilder: (context, index) {
               final task = tasks[index];
+
               return ListTile(
                 title: Text(task.title),
-                subtitle: Text(task.description),
+                subtitle: Text(task.dueDate.toLocal().toString()),
                 trailing: Icon(
-                  task.isCompleted ? Icons.check_circle : Icons.circle_outlined,
+                  task.isCompleted ? Icons.check_circle : Icons.circle,
                   color: task.isCompleted ? Colors.green : Colors.grey,
                 ),
                 onTap: () {
-                  Navigator.of(context).push(
+                  Navigator.push(
+                    context,
                     MaterialPageRoute(
                       builder: (context) => TaskDetailScreen(task: task),
                     ),
@@ -47,6 +36,17 @@ class HomeScreen extends StatelessWidget {
                 },
               );
             },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TaskFormScreen(),
+            ),
           );
         },
       ),

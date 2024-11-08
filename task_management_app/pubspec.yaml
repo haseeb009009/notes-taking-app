@@ -10,13 +10,11 @@ dependencies:
     sdk: flutter
   provider: ^6.0.0
   sqflite: ^2.0.0+4
+  path: ^1.8.0
   path_provider: ^2.0.11
   flutter_local_notifications: ^9.4.0
   share_plus: ^4.5.0
   csv: ^5.0.0
-  pdf: ^3.11.1
-  path: ^1.8.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

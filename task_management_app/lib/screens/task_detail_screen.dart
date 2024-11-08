@@ -1,53 +1,29 @@
-//lib/screens/task_detail_screen.dart
-
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../models/task_model.dart';
-import '../providers/task_provider.dart';
 
 class TaskDetailScreen extends StatelessWidget {
   final TaskModel task;
 
-  const TaskDetailScreen({super.key, required this.task});
+  TaskDetailScreen({required this.task});
 
   @override
   Widget build(BuildContext context) {
-    final taskProvider = Provider.of<TaskProvider>(context);
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text(task.title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              // Navigate to edit screen
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () {
-              taskProvider.deleteTask(task.id!);
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text('Task Details')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              task.title,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(task.description),
-            const SizedBox(height: 16),
-            Text('Due Date: ${task.dueDate.toLocal()}'),
-            const SizedBox(height: 16),
-            Text(task.isRepeated ? 'Repeated Task' : 'One-Time Task'),
+            Text('Title: ${task.title}', style: TextStyle(fontSize: 20)),
+            SizedBox(height: 10),
+            Text('Description: ${task.description}'),
+            SizedBox(height: 10),
+            Text('Due Date: ${task.dueDate.toLocal()}'.split(' ')[0]),
+            SizedBox(height: 10),
+            Text('Completed: ${task.isCompleted ? 'Yes' : 'No'}'),
+            SizedBox(height: 10),
+            Text('Repeated: ${task.isRepeated ? 'Yes' : 'No'}'),
           ],
         ),
       ),

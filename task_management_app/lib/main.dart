@@ -5,23 +5,28 @@ import 'screens/home_screen.dart';
 import 'services/theme_service.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => TaskProvider()),
+        ChangeNotifierProvider(create: (context) => ThemeService()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => TaskProvider(),
-      child: MaterialApp(
-        title: 'Task Management App',
-        theme: ThemeService.lightTheme,
-        darkTheme: ThemeService.darkTheme,
-        themeMode: ThemeMode.system,
-        home: HomeScreen(),
-      ),
+    final themeService = Provider.of<ThemeService>(context);
+
+    return MaterialApp(
+      title: 'Task Management App',
+      theme: themeService.lightTheme,
+      darkTheme: themeService.darkTheme,
+      themeMode: themeService.themeMode,
+      home: HomeScreen(),
     );
   }
 }
