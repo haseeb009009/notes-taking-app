@@ -25,7 +25,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeService.lightTheme,
       darkTheme: ThemeService.darkTheme,
       themeMode: themeMode, // Applies current theme mode from provider
+      debugShowCheckedModeBanner: false,
       home: const HomeScreen(),
+
     );
   }
 }

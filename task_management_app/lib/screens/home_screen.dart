@@ -40,18 +40,25 @@ class HomeScreen extends StatelessWidget {
             tooltip: 'Toggle Theme',
             onPressed: () {
               // Toggle theme between light and dark
-              final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-              taskProvider.setThemeMode(isDarkMode ? ThemeMode.light : ThemeMode.dark);
+              final isDarkMode =
+                  Theme.of(context).brightness == Brightness.dark;
+              taskProvider
+                  .setThemeMode(isDarkMode ? ThemeMode.light : ThemeMode.dark);
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.add),
+          Center(
+              child: IconButton(
+            icon: const Icon(
+              Icons.add,
+              size: 65.0,
+              color: Colors.green,
+            ),
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => const AddTaskScreen()),
               );
             },
-          ),
+          )),
         ],
       ),
       body: Consumer<TaskProvider>(
@@ -68,7 +75,9 @@ class HomeScreen extends StatelessWidget {
                       title: Text(task.title),
                       subtitle: Text(task.description),
                       trailing: Icon(
-                        task.isCompleted ? Icons.check_circle : Icons.circle_outlined,
+                        task.isCompleted
+                            ? Icons.check_circle
+                            : Icons.circle_outlined,
                         color: task.isCompleted ? Colors.green : Colors.grey,
                       ),
                       onTap: () {
