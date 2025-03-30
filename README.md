@@ -1,4 +1,4 @@
-# labmid
+# flutter note app
 images 
 ![Project Logo](assets/1.png)
 ![Project Logo](assets/2.png)
